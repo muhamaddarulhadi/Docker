@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Docker Documentation Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #2188ff;
+      --accent2: #58a6ff;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --whale: #1d63ed;
+      --sidebar-w: 270px;
+      --header-h: 60px;
+    }
+    [data-theme="light"] {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface2: #f0f2f5;
+      --border: #d0d7de;
+      --accent: #0969da;
+      --accent2: #0550ae;
+      --text: #1f2328;
+      --text-muted: #57606a;
+      --green: #1a7f37;
+      --red: #cf222e;
+      --yellow: #9a6700;
+      --whale: #0550ae;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Header ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
+    .logo svg { width: 32px; height: 32px; }
+    .hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 6px; }
+    .hamburger svg { width: 22px; height: 22px; }
+    .header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .theme-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 8px; padding: 6px 10px;
+      cursor: pointer; font-size: .85rem; display: flex; align-items: center; gap: 6px;
+      transition: all .15s; white-space: nowrap;
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent2); }
+
+    /* ── Layout ── */
+    .layout { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    aside {
+      position: fixed; top: var(--header-h); left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto; padding: 20px 0;
+      transition: transform .25s ease;
+    }
+    aside::-webkit-scrollbar { width: 4px; }
+    aside::-webkit-scrollbar-track { background: transparent; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .nav-section { margin-bottom: 24px; }
+    .nav-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--text-muted); padding: 0 20px 6px;
+    }
+    .nav-link {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 20px; font-size: .875rem; color: var(--text-muted);
+      text-decoration: none; border-left: 2px solid transparent;
+      transition: all .15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--accent2); border-left-color: var(--accent2); background: rgba(88,166,255,.07); }
+    .nav-link .icon { font-size: 1rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+    /* ── Main ── */
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1; padding: 48px 48px 80px;
+      max-width: calc(960px + var(--sidebar-w));
+      width: 100%;
+    }
+
+    /* ── Sections ── */
+    section { margin-bottom: 72px; scroll-margin-top: calc(var(--header-h) + 16px); }
+    section:first-child { padding-top: 0; }
+
+    /* ── Headings ── */
+    h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 12px; }
+    h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 10px; color: var(--accent2); }
+    h4 { font-size: .95rem; font-weight: 600; margin: 18px 0 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, var(--bg) 0%, #0e2040 60%, #0a1628 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 48px; margin-bottom: 48px;
+      position: relative; overflow: hidden;
+    }
+    [data-theme="light"] .hero {
+      background: linear-gradient(135deg, #e8f0fe 0%, #dbeafe 60%, #eff6ff 100%);
+    }
+    .hero::before {
+      content: '🐳';
+      position: absolute; right: 32px; top: 50%; transform: translateY(-50%);
+      font-size: 8rem; opacity: .08;
+    }
+    .hero p { color: var(--text-muted); max-width: 600px; margin-top: 12px; font-size: 1.05rem; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .tag {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px; font-size: .8rem; color: var(--text-muted);
+    }
+
+    /* ── Cards grid ── */
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 16px; margin: 24px 0; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px;
+      transition: border-color .2s, transform .15s;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card-icon { font-size: 1.8rem; margin-bottom: 10px; }
+    .card-title { font-weight: 600; font-size: .95rem; margin-bottom: 6px; }
+    .card-desc { font-size: .82rem; color: var(--text-muted); }
+
+    /* ── Platform comparison ── */
+    .platform-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; margin: 20px 0; }
+    .platform-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+    }
+    .platform-card .plat-name { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+    .platform-card .plat-sub { font-size: .8rem; color: var(--text-muted); }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    thead { background: var(--surface2); }
+    th { padding: 10px 14px; text-align: left; font-weight: 600; color: var(--text-muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+    td { padding: 10px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: var(--red); font-weight: 700; }
+
+    /* ── Code blocks ── */
+    .code-wrap { position: relative; margin: 16px 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .code-header {
+      background: var(--surface2); padding: 8px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .code-lang { font-size: .75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; }
+    .copy-btn {
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 6px; padding: 3px 10px; font-size: .75rem; cursor: pointer;
+      transition: all .15s; font-family: inherit;
+    }
+    .copy-btn:hover { background: var(--surface); color: var(--text); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+    pre[class*="language-"] { margin: 0 !important; border-radius: 0 !important; max-height: 420px; overflow-y: auto; }
+    pre[class*="language-"]::-webkit-scrollbar { width: 6px; height: 6px; }
+    pre[class*="language-"]::-webkit-scrollbar-track { background: #1a1a2e; }
+    pre[class*="language-"]::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: 8px; padding: 14px 16px; margin: 16px 0;
+      display: flex; gap: 10px; align-items: flex-start; font-size: .9rem;
+    }
+    .callout-icon { flex-shrink: 0; font-size: 1.1rem; margin-top: 1px; }
+    .callout.info { background: rgba(33,136,255,.1); border: 1px solid rgba(33,136,255,.3); }
+    .callout.warn { background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.3); }
+    .callout.danger { background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3); }
+    .callout.success { background: rgba(63,185,80,.1); border: 1px solid rgba(63,185,80,.3); }
+    .callout .callout-text strong { display: block; margin-bottom: 2px; }
+
+    /* ── Tips grid ── */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 12px; margin: 16px 0; }
+    .tip-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 16px; font-size: .875rem;
+    }
+    .tip-card strong { color: var(--accent2); display: block; margin-bottom: 4px; font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* ── Step list ── */
+    .steps { counter-reset: step; }
+    .step {
+      display: flex; gap: 16px; margin-bottom: 24px;
+      counter-increment: step;
+    }
+    .step-num {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--whale), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; margin-top: 2px;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-weight: 600; margin-bottom: 6px; }
+
+    /* ── Tabs ── */
+    .tabs { margin: 20px 0; }
+    .tab-btns { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: -1px; }
+    .tab-btn {
+      background: none; border: none; color: var(--text-muted);
+      padding: 9px 18px; font-size: .875rem; cursor: pointer;
+      border-bottom: 2px solid transparent; font-family: inherit;
+      transition: all .15s; margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent2); border-bottom-color: var(--accent2); }
+    .tab-pane { display: none; padding-top: 16px; }
+    .tab-pane.active { display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      aside { transform: translateX(-100%); z-index: 90; }
+      aside.open { transform: translateX(0); }
+      main { margin-left: 0; padding: 24px 20px 60px; }
+      h1 { font-size: 1.7rem; }
+      .hero { padding: 28px 20px; }
+      .hero::before { display: none; }
+    }
+
+    /* ── Section page markers ── */
+    .section-badge {
+      display: inline-block;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 10px; font-size: .75rem;
+      color: var(--text-muted); margin-bottom: 8px; font-weight: 600;
+    }
+    code:not([class]) {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 6px; font-size: .85em;
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+    }
+
+    /* overlay for mobile sidebar */
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 89; }
+    #overlay.show { display: block; }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <div class="logo">
+    <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="60" height="60" rx="12" fill="#1d63ed"/>
+      <rect x="8" y="32" width="10" height="8" rx="2" fill="white" opacity=".9"/>
+      <rect x="21" y="32" width="10" height="8" rx="2" fill="white" opacity=".9"/>
+      <rect x="34" y="32" width="10" height="8" rx="2" fill="white" opacity=".9"/>
+      <rect x="8" y="20" width="10" height="8" rx="2" fill="white" opacity=".7"/>
+      <rect x="21" y="20" width="10" height="8" rx="2" fill="white" opacity=".7"/>
+      <rect x="21" y="8" width="10" height="8" rx="2" fill="white" opacity=".5"/>
+      <path d="M48 30c0-3-2-5-5-5h-1a7 7 0 00-7-6v22h13c3 0 5-2 5-5a5 5 0 00-5-6z" fill="white" opacity=".9"/>
+    </svg>
+    Docker Docs Hub
+  </div>
+  <div class="header-right">
+    <button class="theme-btn" id="themeToggle">🌙 Dark</button>
+  </div>
+</header>
+
+<!-- Sidebar overlay (mobile) -->
+<div id="overlay"></div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">Overview</div>
+      <a class="nav-link active" href="#overview" data-section="overview">
+        <span class="icon">🏠</span> Home
+      </a>
+      <a class="nav-link" href="#concepts" data-section="concepts">
+        <span class="icon">📦</span> Core Concepts
+      </a>
+      <a class="nav-link" href="#quickstart" data-section="quickstart">
+        <span class="icon">⚡</span> Quick Start
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Platform Guides</div>
+      <a class="nav-link" href="#linux" data-section="linux">
+        <span class="icon">🐧</span> Linux Setup
+      </a>
+      <a class="nav-link" href="#linux-compose" data-section="linux-compose">
+        <span class="icon">🔧</span> Linux Compose
+      </a>
+      <a class="nav-link" href="#linux-odbc" data-section="linux-odbc">
+        <span class="icon">🗄️</span> ODBC Driver (Linux)
+      </a>
+      <a class="nav-link" href="#windows" data-section="windows">
+        <span class="icon">🪟</span> Windows Server
+      </a>
+      <a class="nav-link" href="#windows-odbc" data-section="windows-odbc">
+        <span class="icon">🗃️</span> ODBC Driver (Windows)
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Command Reference</div>
+      <a class="nav-link" href="#service-mgmt" data-section="service-mgmt">
+        <span class="icon">⚙️</span> Service Management
+      </a>
+      <a class="nav-link" href="#docker-cmds" data-section="docker-cmds">
+        <span class="icon">🐋</span> Docker Commands
+      </a>
+      <a class="nav-link" href="#compose-cmds" data-section="compose-cmds">
+        <span class="icon">📋</span> Compose Commands
+      </a>
+      <a class="nav-link" href="#custom-file" data-section="custom-file">
+        <span class="icon">📁</span> Custom Compose File
+      </a>
+      <a class="nav-link" href="#compose-example" data-section="compose-example">
+        <span class="icon">📝</span> Compose Examples
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">More</div>
+      <a class="nav-link" href="#troubleshoot" data-section="troubleshoot">
+        <span class="icon">🔍</span> Troubleshooting
+      </a>
+      <a class="nav-link" href="#tips" data-section="tips">
+        <span class="icon">💡</span> Tips & Reminders
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- ── OVERVIEW ── -->
+    <section id="overview">
+      <div class="hero">
+        <h1>🐳 Docker Documentation Hub</h1>
+        <p>Everything you need to install, configure, and operate Docker — across Linux, Windows Server, and any environment where containers run.</p>
+        <div class="hero-tags">
+          <span class="tag">Docker Engine</span>
+          <span class="tag">Docker Compose</span>
+          <span class="tag">Ubuntu / Debian</span>
+          <span class="tag">Windows Server</span>
+          <span class="tag">MSSQL ODBC 18</span>
+          <span class="tag">Command Reference</span>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-text">
+          Docker is an open platform for developing, shipping, and running applications inside <strong>containers</strong> — lightweight, portable, self-sufficient environments that package your code along with all its dependencies. Once containerized, your app runs the same way everywhere.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONCEPTS ── -->
+    <section id="concepts">
+      <span class="section-badge">Overview</span>
+      <h2>📦 Core Concepts</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">📦</div>
+          <div class="card-title">Container</div>
+          <div class="card-desc">A runnable instance of an image — isolated, lightweight, and portable.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🖼️</div>
+          <div class="card-title">Image</div>
+          <div class="card-desc">A read-only blueprint used to create containers (like a class vs. an object).</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-title">Docker Engine</div>
+          <div class="card-desc">The core runtime daemon that builds and runs containers.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <div class="card-title">Docker Compose</div>
+          <div class="card-desc">A tool for defining and running multi-container applications via a YAML file.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗂️</div>
+          <div class="card-title">Registry</div>
+          <div class="card-desc">A repository for Docker images (e.g. Docker Hub, private registries).</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">💾</div>
+          <div class="card-title">Volume</div>
+          <div class="card-desc">Persistent storage that outlives a container's lifecycle.</div>
+        </div>
+      </div>
+
+      <h3>Platform Support</h3>
+      <div class="platform-grid">
+        <div class="platform-card">
+          <div class="plat-name">🐧 Ubuntu / Debian</div>
+          <div class="plat-sub">Docker Engine via <code>apt</code></div>
+        </div>
+        <div class="platform-card">
+          <div class="plat-name">🪟 Windows Server</div>
+          <div class="plat-sub">Docker Engine via PowerShell</div>
+        </div>
+        <div class="platform-card">
+          <div class="plat-name">🖥️ Windows 10/11</div>
+          <div class="plat-sub">Docker Desktop (GUI app)</div>
+        </div>
+        <div class="platform-card">
+          <div class="plat-name">🍎 macOS</div>
+          <div class="plat-sub">Docker Desktop</div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text">
+          <strong>Windows Server Note</strong>
+          Docker Desktop is <strong>not</strong> supported on Windows Server. Use Docker Engine installed directly via PowerShell instead.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── QUICK START ── -->
+    <section id="quickstart">
+      <span class="section-badge">Overview</span>
+      <h2>⚡ Quick Start</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;">Once Docker is installed (see platform guides below), verify it's working:</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker version          # Check client & server version
+docker info             # Full daemon information
+docker run hello-world  # Run a test container</code></pre>
+      </div>
+
+      <p style="color:var(--text-muted);margin:16px 0 8px;">To start a multi-container app defined in a <code>docker-compose.yml</code>:</p>
+
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose up -d</code></pre>
+      </div>
+    </section>
+
+    <!-- ── LINUX SETUP ── -->
+    <section id="linux">
+      <span class="section-badge">Linux Guide</span>
+      <h2>🐧 Linux Server — Install Docker Engine</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;"><strong>Platform:</strong> Ubuntu / Debian</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Update system & install prerequisites</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">sudo apt-get update
+sudo apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Add Docker's official GPG key & repository</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash"># Create keyrings directory
+sudo install -m 0755 -d /etc/apt/keyrings
+
+# Download and save Docker's GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+# Set correct permissions on the key
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add Docker repository to apt sources
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update</code></pre>
+            </div>
+            <div class="callout info">
+              <span class="callout-icon">ℹ️</span>
+              <div class="callout-text">For Debian, replace <code>ubuntu</code> with <code>debian</code> in the repository URL above.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Install Docker Engine</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">sudo apt-get install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    docker-buildx-plugin \
+    docker-compose-plugin</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Verify installation</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">sudo systemctl status docker
+sudo docker run hello-world
+docker --version</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">(Optional) Run Docker without <code>sudo</code></div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">sudo usermod -aG docker $USER
+newgrp docker
+groups $USER</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Installation Summary</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>Action</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Update system</td><td>Run <code>apt-get update</code> to refresh package index</td></tr>
+            <tr><td>2</td><td>Install deps</td><td>Install <code>curl</code>, <code>gnupg</code>, <code>ca-certificates</code></td></tr>
+            <tr><td>3</td><td>Add GPG key</td><td>Download and register Docker's official signing key</td></tr>
+            <tr><td>4</td><td>Add repo</td><td>Add Docker's stable apt repository</td></tr>
+            <tr><td>5</td><td>Install</td><td>Install <code>docker-ce</code> and associated plugins</td></tr>
+            <tr><td>6</td><td>Verify</td><td>Run hello-world container to confirm working install</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── LINUX COMPOSE ── -->
+    <section id="linux-compose">
+      <span class="section-badge">Linux Guide</span>
+      <h2>🔧 Linux — Install Docker Compose</h2>
+
+      <div class="callout success">
+        <span class="callout-icon">✅</span>
+        <div class="callout-text">Docker Compose V2 is included as a plugin when you install Docker Engine using the steps above (<code>docker-compose-plugin</code>). If you already followed the Linux setup, Compose is already available.</div>
+      </div>
+
+      <h3>Via APT (Recommended)</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Verify Docker Compose is available (V2 plugin syntax)
+docker compose version
+
+# Install separately if needed
+sudo apt-get install -y docker-compose-plugin
+
+# Confirm version
+docker compose version</code></pre>
+      </div>
+
+      <h3>Standalone Binary (Alternative)</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Download the latest Docker Compose binary
+COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest \
+  | grep '"tag_name"' | cut -d'"' -f4)
+
+sudo curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker-compose
+
+# Make binary executable
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Verify installation
+docker-compose --version</code></pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <div class="callout-text">Docker Compose V2 uses <code>docker compose</code> (space, no hyphen). The older V1 used <code>docker-compose</code> (with hyphen). This guide uses V2 syntax.</div>
+      </div>
+    </section>
+
+    <!-- ── LINUX ODBC ── -->
+    <section id="linux-odbc">
+      <span class="section-badge">Linux Guide</span>
+      <h2>🗄️ ODBC Driver 18 for SQL Server (Linux)</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;">The Microsoft ODBC Driver 18 enables applications on Linux to connect to Microsoft SQL Server and Azure SQL Database.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Import Microsoft Signing Key</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+  | sudo gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Add Microsoft Package Repository</div>
+            <p style="color:var(--text-muted);margin-bottom:8px;font-size:.875rem;">Choose the command matching your distribution:</p>
+
+            <div class="tabs">
+              <div class="tab-btns">
+                <button class="tab-btn active" data-tab="u2204">Ubuntu 22.04</button>
+                <button class="tab-btn" data-tab="u2004">Ubuntu 20.04</button>
+                <button class="tab-btn" data-tab="deb12">Debian 12</button>
+                <button class="tab-btn" data-tab="deb11">Debian 11</button>
+              </div>
+              <div class="tab-pane active" id="u2204">
+                <div class="code-wrap">
+                  <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                  <pre><code class="language-bash">curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
+  | sudo tee /etc/apt/sources.list.d/mssql-release.list</code></pre>
+                </div>
+              </div>
+              <div class="tab-pane" id="u2004">
+                <div class="code-wrap">
+                  <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                  <pre><code class="language-bash">curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list \
+  | sudo tee /etc/apt/sources.list.d/mssql-release.list</code></pre>
+                </div>
+              </div>
+              <div class="tab-pane" id="deb12">
+                <div class="code-wrap">
+                  <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                  <pre><code class="language-bash">curl https://packages.microsoft.com/config/debian/12/prod.list \
+  | sudo tee /etc/apt/sources.list.d/mssql-release.list</code></pre>
+                </div>
+              </div>
+              <div class="tab-pane" id="deb11">
+                <div class="code-wrap">
+                  <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                  <pre><code class="language-bash">curl https://packages.microsoft.com/config/debian/11/prod.list \
+  | sudo tee /etc/apt/sources.list.d/mssql-release.list</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Install the Driver</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">sudo apt-get update
+
+# Accept EULA and install ODBC Driver 18
+sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+# (Optional) Install command-line tools (sqlcmd, bcp)
+sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
+
+# (Optional) Install unixODBC dev headers
+sudo apt-get install -y unixodbc-dev</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Add sqlcmd to PATH (Optional)</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash">echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+source ~/.bashrc
+
+# Test connection to SQL Server
+sqlcmd -S &lt;server_name&gt; -U &lt;username&gt; -P "&lt;password&gt;"</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Verify the driver is registered</div>
+            <div class="code-wrap">
+              <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+              <pre><code class="language-bash"># List installed ODBC drivers
+odbcinst -q -d
+# Expected output:
+# [ODBC Driver 18 for SQL Server]</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>ODBC Driver Support — Linux Distributions</h3>
+      <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:12px;">As of driver v18.6 (latest GA). ✅ = Supported, ❌ = Not supported.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Linux Distribution</th><th style="text-align:center">Driver 18.6</th><th style="text-align:center">Driver 18.x</th><th style="text-align:center">Driver 17.x</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ubuntu 22.04 (Jammy)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Ubuntu 20.04 (Focal)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Ubuntu 18.04 (Bionic)</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Ubuntu 16.04 (Xenial)</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Debian 13</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Debian 12 (Bookworm)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Debian 11 (Bullseye)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Debian 10 (Buster)</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Red Hat Enterprise Linux 10</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Red Hat Enterprise Linux 9</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Red Hat Enterprise Linux 8</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Red Hat Enterprise Linux 7</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SUSE Linux Enterprise Server 15</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SUSE Linux Enterprise Server 12</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Oracle Linux 10</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Oracle Linux 9</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Oracle Linux 8</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Alpine Linux 3.20 / 3.21 / 3.22</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Alpine Linux 3.18 / 3.19</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Azure Linux 3.0</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text"><strong>ARM64 support</strong> on Red Hat 8/9, Debian 11, and Ubuntu 20.04/22.04 requires <strong>Driver 18.1 or later</strong>.</div>
+      </div>
+    </section>
+
+    <!-- ── WINDOWS ── -->
+    <section id="windows">
+      <span class="section-badge">Windows Guide</span>
+      <h2>🪟 Windows Server — Docker Setup</h2>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text"><strong>Important:</strong> Docker Desktop is <strong>not supported on Windows Server</strong>. This guide covers Docker Engine installed via PowerShell. Always run PowerShell <strong>as Administrator</strong>.</div>
+      </div>
+
+      <h3>Platform Overview</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Feature</th><th>Windows 10/11 (PC)</th><th>Windows Server</th></tr></thead>
+          <tbody>
+            <tr><td>Docker Desktop</td><td class="check">✅ Supported</td><td class="cross">❌ Not Supported</td></tr>
+            <tr><td>Docker Engine</td><td>Via Desktop</td><td class="check">✅ Natively</td></tr>
+            <tr><td>Linux Containers</td><td>Via WSL2 / Hyper-V</td><td>Via Hyper-V (limited)</td></tr>
+            <tr><td>Windows Containers</td><td class="check">✅ Supported</td><td class="check">✅ Supported</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Step 1 — Enable Windows Containers Feature</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-powershell">Install-WindowsFeature -Name Containers -Restart</code></pre>
+      </div>
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text">The server will <strong>reboot</strong> after this step. Re-open PowerShell as Administrator after restart.</div>
+      </div>
+
+      <h3>Step 2 — Install Docker Engine</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-powershell">Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/microsoft/Windows-Containers/Main/helpful_tools/Install-DockerCE/install-docker-ce.ps1" -OutFile install-docker-ce.ps1
+
+.\install-docker-ce.ps1</code></pre>
+      </div>
+
+      <h3>Step 3 — Start Docker & Set Auto-Start</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-powershell">Start-Service docker
+Set-Service -Name docker -StartupType Automatic</code></pre>
+      </div>
+
+      <h3>Step 4 — Install Docker Compose</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-powershell"># Create the CLI plugins directory
+mkdir "$env:ProgramFiles\Docker\cli-plugins" -Force
+
+# Download the latest Docker Compose binary
+Invoke-WebRequest -UseBasicParsing "https://github.com/docker/compose/releases/latest/download/docker-compose-windows-x86_64.exe" -OutFile "$env:ProgramFiles\Docker\cli-plugins\docker-compose.exe"
+
+# Verify installation
+docker compose version</code></pre>
+      </div>
+
+      <h3>Managing Docker on Windows Server</h3>
+
+      <div class="tabs">
+        <div class="tab-btns">
+          <button class="tab-btn active" data-tab="ps-mgmt">PowerShell</button>
+          <button class="tab-btn" data-tab="cmd-mgmt">CMD</button>
+        </div>
+        <div class="tab-pane active" id="ps-mgmt">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-powershell">Start-Service docker                                    # Start Docker service
+Stop-Service docker                                     # Stop Docker service
+Restart-Service docker                                  # Restart Docker service
+Get-Service docker                                      # Check Docker service status
+Set-Service -Name docker -StartupType Automatic         # Enable on boot</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="cmd-mgmt">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">cmd</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-bash">net start docker          REM Start Docker service
+net stop docker           REM Stop Docker service
+sc query docker           REM Check Docker service status
+sc config docker start= auto    REM Enable Docker to start on boot
+sc config docker start= demand  REM Disable Docker from starting on boot
+docker version            REM Verify Docker is running
+docker ps</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>Check SQL Server Connectivity via pyodbc</h3>
+      <div class="tabs">
+        <div class="tab-btns">
+          <button class="tab-btn active" data-tab="sql-modern">SQL Server 2012+</button>
+          <button class="tab-btn" data-tab="sql-legacy">SQL Server 2008 (Legacy)</button>
+        </div>
+        <div class="tab-pane active" id="sql-modern">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-powershell">docker exec -it &lt;container_name&gt; python -c "import pyodbc; conn = pyodbc.connect('DRIVER={SQL Server};SERVER=&lt;ip_server_db&gt;,1433;DATABASE=your_db;UID=your_user;PWD=your_password;'); print('Connected!')"</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="sql-legacy">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-powershell">docker exec -it &lt;container_name&gt; python -c "import pyodbc; conn = pyodbc.connect('DRIVER={SQL Server};SERVER=.;ADDRESS=&lt;ip_server_db&gt;,1433;DATABASE=your_db;UID=your_user;PWD=your_password;'); print('Connected!')"</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>Recommendations</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Use Case</th><th>Recommendation</th></tr></thead>
+          <tbody>
+            <tr><td>Development on PC</td><td>Docker Desktop (Windows 10/11)</td></tr>
+            <tr><td>Windows Server workloads</td><td>Docker Engine via PowerShell</td></tr>
+            <tr><td>Linux containers in production</td><td>Use a Linux server (Ubuntu / RHEL)</td></tr>
+            <tr><td>Mixed environments</td><td>Linux VM or WSL2 on Windows PC</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── WINDOWS ODBC ── -->
+    <section id="windows-odbc">
+      <span class="section-badge">Windows Guide</span>
+      <h2>🗃️ ODBC Driver for SQL Server (Windows)</h2>
+      <p style="color:var(--text-muted);margin-bottom:16px;">The Microsoft ODBC Driver for SQL Server is available as a standalone installer for Windows. The latest version is <strong>18.6.2.1 (GA)</strong>. All major versions can be installed <strong>side by side</strong>.</p>
+
+      <h3>Supported Windows Versions</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Windows Platform</th><th style="text-align:center">Driver 18.x</th><th style="text-align:center">Driver 17.x</th><th style="text-align:center">Driver 13.x</th></tr></thead>
+          <tbody>
+            <tr><td>Windows 11 (x64 / ARM64)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Windows 10 (x64 / x86)</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Windows Server 2022</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Windows Server 2019</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="cross" style="text-align:center">❌</td></tr>
+            <tr><td>Windows Server 2016</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Windows Server 2012 R2</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Windows Server 2008 R2</td><td class="cross" style="text-align:center">❌</td><td class="cross" style="text-align:center">❌</td><td class="check" style="text-align:center">✅</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Available Architectures</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Architecture</th><th>Installer</th></tr></thead>
+          <tbody>
+            <tr><td>x64 (64-bit)</td><td><code>msodbcsql18-x64.msi</code> — installs both 64-bit and 32-bit drivers</td></tr>
+            <tr><td>x86 (32-bit only)</td><td><code>msodbcsql18-x86.msi</code></td></tr>
+            <tr><td>ARM64</td><td><code>msodbcsql18-arm64.msi</code> — installs both ARM64 and 32-bit drivers</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>SQL Server Version Compatibility (Driver 18.x)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>SQL Server / Azure Version</th><th style="text-align:center">Supported</th></tr></thead>
+          <tbody>
+            <tr><td>Microsoft Fabric SQL Database</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Azure SQL Database</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Azure Synapse Analytics</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>Azure SQL Managed Instance</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2025</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2022</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2019</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2017</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2016</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2014</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2012</td><td class="check" style="text-align:center">✅</td></tr>
+            <tr><td>SQL Server 2008 / 2008 R2</td><td class="cross" style="text-align:center">❌ (use Driver 17)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-icon">⚠️</span>
+        <div class="callout-text"><strong>Prerequisite:</strong> The ODBC Driver for SQL Server on Windows requires the <strong>Microsoft Visual C++ Redistributable</strong>. Most Windows systems already have this installed.</div>
+      </div>
+    </section>
+
+    <!-- ── SERVICE MGMT ── -->
+    <section id="service-mgmt">
+      <span class="section-badge">Reference</span>
+      <h2>⚙️ Start Docker Service</h2>
+      <p style="color:var(--text-muted);margin-bottom:20px;">Before using Docker commands, the Docker daemon must be running. The method varies by operating system.</p>
+
+      <div class="tabs">
+        <div class="tab-btns">
+          <button class="tab-btn active" data-tab="svc-linux-systemd">Linux (systemd)</button>
+          <button class="tab-btn" data-tab="svc-linux-old">Linux (older)</button>
+          <button class="tab-btn" data-tab="svc-mac">macOS</button>
+          <button class="tab-btn" data-tab="svc-winps">Windows PS</button>
+          <button class="tab-btn" data-tab="svc-wincmd">Windows CMD</button>
+        </div>
+        <div class="tab-pane active" id="svc-linux-systemd">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-bash">sudo systemctl start docker       # Start Docker service
+sudo systemctl stop docker        # Stop Docker service
+sudo systemctl restart docker     # Restart Docker service
+sudo systemctl status docker      # Check Docker service status
+sudo systemctl enable docker      # Enable Docker to start on boot
+sudo systemctl disable docker     # Disable Docker from starting on boot</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="svc-linux-old">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-bash">sudo service docker start         # Start Docker service
+sudo service docker stop          # Stop Docker service
+sudo service docker restart       # Restart Docker service
+sudo service docker status        # Check Docker service status</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="svc-mac">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-bash">open -a Docker                                  # Start Docker Desktop app
+osascript -e 'quit app "Docker"'               # Stop Docker Desktop app
+docker info                                     # Shows info if running
+docker ps                                       # Quick check — works if daemon is up</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="svc-winps">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">powershell</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-powershell">Start-Service docker                            # Start Docker service
+Stop-Service docker                             # Stop Docker service
+Restart-Service docker                          # Restart Docker service
+Get-Service docker                              # Check Docker service status
+Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"   # Start Docker Desktop</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="svc-wincmd">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">cmd</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-bash">net start docker                                REM Start Docker service
+net stop docker                                 REM Stop Docker service
+sc query docker                                 REM Check Docker service status
+sc config docker start= auto                    REM Set Docker to auto-start on boot
+docker version
+docker ps</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>Verify Docker is Running (All Platforms)</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker info       # Full daemon info
+docker version    # Client & server version
+docker ps         # List containers (confirms daemon is up)</code></pre>
+      </div>
+
+      <div class="callout info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-text">On Linux servers, always run <code>sudo systemctl enable docker</code> so Docker starts automatically after a reboot — critical for production environments.</div>
+      </div>
+    </section>
+
+    <!-- ── DOCKER COMMANDS ── -->
+    <section id="docker-cmds">
+      <span class="section-badge">Reference</span>
+      <h2>🐋 Docker Commands</h2>
+
+      <h3>Running Containers</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker run &lt;image&gt;                    # Run a container
+docker run -d &lt;image&gt;                 # Run in detached (background) mode
+docker run -it &lt;image&gt; bash           # Run interactively with shell
+docker run -p 8080:80 &lt;image&gt;         # Map host port 8080 → container port 80
+docker run -v /host:/container &lt;image&gt; # Mount a volume
+docker run --name myapp &lt;image&gt;       # Assign a name</code></pre>
+      </div>
+
+      <h3>Managing Containers</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker ps                             # List running containers
+docker ps -a                          # List all containers (including stopped)
+docker stop &lt;container&gt;               # Stop a container
+docker start &lt;container&gt;              # Start a stopped container
+docker restart &lt;container&gt;            # Restart a container
+docker rm &lt;container&gt;                 # Remove a container
+docker rm -f &lt;container&gt;              # Force remove a running container</code></pre>
+      </div>
+
+      <h3>Images</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker images                         # List local images
+docker pull &lt;image&gt;                   # Pull image from registry
+docker build -t myapp:1.0 .           # Build image from Dockerfile
+docker push &lt;image&gt;                   # Push image to registry
+docker rmi &lt;image&gt;                    # Remove an image
+docker tag &lt;image&gt; new:tag            # Tag an image</code></pre>
+      </div>
+
+      <h3>Logs & Inspection</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker logs &lt;container&gt;               # View container logs
+docker logs -f &lt;container&gt;            # Follow/stream logs
+docker exec -it &lt;container&gt; bash      # Shell into running container
+docker inspect &lt;container&gt;            # Full container details (JSON)
+docker stats                          # Live resource usage
+docker top &lt;container&gt;                # Running processes inside container</code></pre>
+      </div>
+
+      <h3>Cleanup</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker system prune                   # Remove all unused resources
+docker system prune -a                # Also remove unused images
+docker volume prune                   # Remove unused volumes
+docker image prune                    # Remove dangling images</code></pre>
+      </div>
+    </section>
+
+    <!-- ── COMPOSE COMMANDS ── -->
+    <section id="compose-cmds">
+      <span class="section-badge">Reference</span>
+      <h2>📋 Docker Compose Commands</h2>
+
+      <h3>Core Lifecycle</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose up                     # Start all services
+docker compose up -d                  # Start in detached mode
+docker compose up --build             # Rebuild images before starting
+docker compose down                   # Stop and remove containers
+docker compose down -v                # Also remove volumes
+docker compose restart                # Restart all services</code></pre>
+      </div>
+
+      <h3>Monitoring</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose ps                     # List service containers
+docker compose logs                   # View all service logs
+docker compose logs -f                # Follow logs
+docker compose logs &lt;service&gt;         # Logs for a specific service
+docker compose top                    # Running processes</code></pre>
+      </div>
+
+      <h3>Running Commands</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose exec &lt;service&gt; bash    # Shell into a running service
+docker compose run &lt;service&gt; bash     # Run a one-off command in new container</code></pre>
+      </div>
+
+      <h3>Build & Config</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose build                  # Build all images
+docker compose build &lt;service&gt;        # Build a specific service
+docker compose config                 # Validate and view merged config
+docker compose pull                   # Pull latest images
+docker compose up -d --scale web=3   # Run 3 instances of 'web' service</code></pre>
+      </div>
+
+      <h3>Quick Reference Table</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>docker compose up -d</code></td><td>Start all services in detached background mode</td></tr>
+            <tr><td><code>docker compose up --build</code></td><td>Rebuild images before starting services</td></tr>
+            <tr><td><code>docker compose down</code></td><td>Stop and remove containers</td></tr>
+            <tr><td><code>docker compose down -v</code></td><td>Stop, remove containers and volumes</td></tr>
+            <tr><td><code>docker compose ps</code></td><td>Show status of all services</td></tr>
+            <tr><td><code>docker compose logs -f</code></td><td>Tail live logs from all services</td></tr>
+            <tr><td><code>docker compose logs -f &lt;svc&gt;</code></td><td>Tail logs from a specific service</td></tr>
+            <tr><td><code>docker compose stop</code></td><td>Stop running containers without removing them</td></tr>
+            <tr><td><code>docker compose start</code></td><td>Restart stopped containers</td></tr>
+            <tr><td><code>docker compose restart</code></td><td>Restart all running services</td></tr>
+            <tr><td><code>docker compose exec &lt;svc&gt; bash</code></td><td>Open shell inside running container</td></tr>
+            <tr><td><code>docker compose pull</code></td><td>Pull latest images defined in YML</td></tr>
+            <tr><td><code>docker compose config</code></td><td>Validate and view merged compose config</td></tr>
+            <tr><td><code>docker compose -f file.yml up -d</code></td><td>Use a custom-named YML file</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── CUSTOM FILE ── -->
+    <section id="custom-file">
+      <span class="section-badge">Reference</span>
+      <h2>📁 Custom Named Compose File (<code>-f</code> flag)</h2>
+      <p style="color:var(--text-muted);margin-bottom:16px;">When your compose file isn't named <code>docker-compose.yml</code>, use the <code>-f</code> flag to specify the filename.</p>
+
+      <h3>Lifecycle with Custom File</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose -f &lt;file.yml&gt; up           # Start with custom file
+docker compose -f &lt;file.yml&gt; up -d        # Start in detached mode
+docker compose -f &lt;file.yml&gt; up --build   # Rebuild before starting
+docker compose -f &lt;file.yml&gt; down         # Stop and remove
+docker compose -f &lt;file.yml&gt; down -v      # Also remove volumes
+docker compose -f &lt;file.yml&gt; restart      # Restart services</code></pre>
+      </div>
+
+      <h3>Monitoring & Build with Custom File</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose -f &lt;file.yml&gt; ps               # List containers
+docker compose -f &lt;file.yml&gt; logs             # View logs
+docker compose -f &lt;file.yml&gt; logs -f          # Follow logs
+docker compose -f &lt;file.yml&gt; logs &lt;service&gt;   # Logs for specific service
+docker compose -f &lt;file.yml&gt; build            # Build all images
+docker compose -f &lt;file.yml&gt; build &lt;service&gt;  # Build specific service
+docker compose -f &lt;file.yml&gt; exec &lt;svc&gt; bash  # Shell into service
+docker compose -f &lt;file.yml&gt; config           # Validate config</code></pre>
+      </div>
+
+      <h3>Real-World Examples</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash">docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.staging.yml up --build
+docker compose -f infra/compose.yml down -v</code></pre>
+      </div>
+
+      <h3>Multiple / Merged Compose Files</h3>
+      <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:12px;">You can stack multiple files — later files override earlier ones. Useful for environment-specific configuration.</p>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Merge two files (later file overrides earlier)
+docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+docker compose -f docker-compose.yml -f docker-compose.staging.yml down</code></pre>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>docker-compose.yml</code></td><td>Base config (shared across all environments)</td></tr>
+            <tr><td><code>docker-compose.override.yml</code></td><td>Local dev overrides (auto-loaded, no <code>-f</code> needed)</td></tr>
+            <tr><td><code>docker-compose.prod.yml</code></td><td>Production overrides</td></tr>
+            <tr><td><code>docker-compose.staging.yml</code></td><td>Staging overrides</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout info">
+        <span class="callout-icon">💡</span>
+        <div class="callout-text"><code>docker-compose.override.yml</code> is automatically merged with <code>docker-compose.yml</code> — no <code>-f</code> flag needed for that one.</div>
+      </div>
+    </section>
+
+    <!-- ── COMPOSE EXAMPLE ── -->
+    <section id="compose-example">
+      <span class="section-badge">Reference</span>
+      <h2>📝 Example docker-compose.yml</h2>
+      <p style="color:var(--text-muted);margin-bottom:16px;">A typical compose file with a web application and SQL Server database:</p>
+
+      <div class="tabs">
+        <div class="tab-btns">
+          <button class="tab-btn active" data-tab="ex-mssql">With MSSQL</button>
+          <button class="tab-btn" data-tab="ex-pg">With PostgreSQL</button>
+        </div>
+        <div class="tab-pane active" id="ex-mssql">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-yaml">services:
+  web:
+    build: .
+    image: myapp/web:1.0.0
+    ports:
+      - "8080:80"
+    container_name: "my-web-app"
+    environment:
+      APP_ENV: "production"
+      APP_PORT: "8080"
+      DB_HOST: "192.168.1.100"
+      DB_PORT: "1433"
+      DB_NAME: "my_database"
+      DB_USER: "app_user"
+      DB_PASSWORD: "s3cur3p@ssword"
+      DB_DRIVER: "ODBC Driver 18 for SQL Server"
+      TOKEN_SECRET: "my-jwt-secret-key"
+      TOKEN_TTL_SECONDS: "3600"
+    depends_on:
+      - db
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: "my-sql-server"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "s3cur3p@ssword"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+
+volumes:
+  db_data:</code></pre>
+          </div>
+        </div>
+        <div class="tab-pane" id="ex-pg">
+          <div class="code-wrap">
+            <div class="code-header"><span class="code-lang">yaml</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-yaml">services:
+  web:
+    build: .
+    image: myapp/web:1.0.0
+    ports:
+      - "8080:80"
+    container_name: "my-web-app"
+    environment:
+      APP_ENV: "production"
+      APP_PORT: "8080"
+      DB_HOST: "192.168.1.100"
+      DB_PORT: "5432"
+      DB_NAME: "my_database"
+      DB_USER: "app_user"
+      DB_PASSWORD: "s3cur3p@ssword"
+      TOKEN_SECRET: "my-jwt-secret-key"
+      TOKEN_TTL_SECONDS: "3600"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: "my-postgres"
+    environment:
+      POSTGRES_DB: "my_database"
+      POSTGRES_USER: "app_user"
+      POSTGRES_PASSWORD: "s3cur3p@ssword"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <h3>Starting Services</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Navigate to directory containing docker-compose.yml
+cd /path/to/your/project
+
+# Start all services in detached (background) mode
+docker compose up -d
+
+# Start services and rebuild images if changed
+docker compose up -d --build
+
+# Start using a specific YML file (non-default name)
+docker compose -f mystack.yml up -d</code></pre>
+      </div>
+    </section>
+
+    <!-- ── TROUBLESHOOTING ── -->
+    <section id="troubleshoot">
+      <span class="section-badge">Help</span>
+      <h2>🔍 Troubleshooting</h2>
+
+      <h3>Docker Service Not Starting</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Check service status and recent logs
+sudo systemctl status docker
+sudo journalctl -u docker -n 50 --no-pager
+
+# Restart Docker service
+sudo systemctl restart docker
+
+# Enable Docker to start on boot
+sudo systemctl enable docker</code></pre>
+      </div>
+
+      <h3>Permission Denied Running Docker</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># If you see: permission denied while trying to connect to Docker socket
+# Add user to docker group
+sudo usermod -aG docker $USER
+
+# Apply immediately (or log out and back in)
+newgrp docker</code></pre>
+      </div>
+
+      <h3>ODBC Driver Not Found</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Verify driver is installed
+odbcinst -q -d
+
+# Reinstall if missing
+sudo ACCEPT_EULA=Y apt-get install --reinstall msodbcsql18
+
+# Check driver file exists
+ls /opt/microsoft/msodbcsql18/lib64/</code></pre>
+      </div>
+
+      <h3>Container Keeps Restarting</h3>
+      <div class="code-wrap">
+        <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+        <pre><code class="language-bash"># Check container exit code and logs
+docker compose ps
+docker compose logs &lt;service_name&gt;
+
+# Inspect container details
+docker inspect &lt;container_id&gt;</code></pre>
+      </div>
+    </section>
+
+    <!-- ── TIPS ── -->
+    <section id="tips">
+      <span class="section-badge">Reference</span>
+      <h2>💡 Tips & Reminders</h2>
+
+      <div class="tips-grid">
+        <div class="tip-card">
+          <strong>compose vs docker-compose</strong>
+          Use <code>docker compose</code> (space) for the modern CLI plugin; <code>docker-compose</code> (hyphen) for the older standalone version.
+        </div>
+        <div class="tip-card">
+          <strong>Override file auto-load</strong>
+          <code>docker-compose.override.yml</code> is automatically merged with <code>docker-compose.yml</code> — no <code>-f</code> flag needed.
+        </div>
+        <div class="tip-card">
+          <strong>Production detached mode</strong>
+          Always use <code>-d</code> (detached) in production so containers run in the background.
+        </div>
+        <div class="tip-card">
+          <strong>Volume deletion warning</strong>
+          Use <code>down -v</code> carefully — it permanently deletes volumes and all stored data.
+        </div>
+        <div class="tip-card">
+          <strong>Disk space cleanup</strong>
+          Run <code>docker system prune -a</code> periodically to reclaim disk space from unused images and containers.
+        </div>
+        <div class="tip-card">
+          <strong>Linux server boot</strong>
+          Run <code>sudo systemctl enable docker</code> on Linux so Docker starts automatically after every reboot.
+        </div>
+        <div class="tip-card">
+          <strong>Windows CMD note</strong>
+          In CMD, comments use <code>REM</code> instead of <code>#</code>. Use <code>net start docker</code> / <code>net stop docker</code>.
+        </div>
+        <div class="tip-card">
+          <strong>Windows Server note</strong>
+          Docker Desktop is <strong>NOT</strong> supported on Windows Server — use Docker Engine directly via PowerShell or CMD.
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-powershell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+<script>
+  // ── Theme toggle ──
+  const themeBtn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme') || 'dark';
+  if (saved === 'light') { root.setAttribute('data-theme', 'light'); themeBtn.textContent = '☀️ Light'; }
+  else { themeBtn.textContent = '🌙 Dark'; }
+
+  themeBtn.addEventListener('click', () => {
+    const isLight = root.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      root.removeAttribute('data-theme');
+      themeBtn.textContent = '🌙 Dark';
+      localStorage.setItem('theme', 'dark');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      themeBtn.textContent = '☀️ Light';
+      localStorage.setItem('theme', 'light');
+    }
+  });
+
+  // ── Copy buttons ──
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.closest('.code-wrap').querySelector('code');
+      navigator.clipboard.writeText(code.innerText).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+  });
+
+  // ── Tabs ──
+  document.querySelectorAll('.tab-btns').forEach(group => {
+    group.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        const container = btn.closest('.tabs');
+        container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        container.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        container.querySelector('#' + tabId)?.classList.add('active');
+      });
+    });
+  });
+
+  // ── Sidebar active link on scroll ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link[data-section]');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[data-section="${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-60px 0px -60% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // ── Mobile hamburger ──
+  const hamburger = document.getElementById('hamburger');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+
+  // Close sidebar on nav link click (mobile)
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>
