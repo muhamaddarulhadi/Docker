@@ -659,12 +659,20 @@ docker-compose --version</code></pre>
 
             <div class="tabs">
               <div class="tab-btns">
-                <button class="tab-btn active" data-tab="u2204">Ubuntu 22.04</button>
+                <button class="tab-btn active" data-tab="u2404">Ubuntu 24.04</button>
+                <button class="tab-btn" data-tab="u2204">Ubuntu 22.04</button>
                 <button class="tab-btn" data-tab="u2004">Ubuntu 20.04</button>
                 <button class="tab-btn" data-tab="deb12">Debian 12</button>
                 <button class="tab-btn" data-tab="deb11">Debian 11</button>
               </div>
-              <div class="tab-pane active" id="u2204">
+              <div class="tab-pane active" id="u2404">
+                <div class="code-wrap">
+                  <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
+                  <pre><code class="language-bash">curl https://packages.microsoft.com/config/ubuntu/24.04/prod.list \
+  | sudo tee /etc/apt/sources.list.d/mssql-release.list</code></pre>
+                </div>
+              </div>
+              <div class="tab-pane" id="u2204">
                 <div class="code-wrap">
                   <div class="code-header"><span class="code-lang">bash</span><button class="copy-btn">Copy</button></div>
                   <pre><code class="language-bash">curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list \
